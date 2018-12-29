@@ -7,7 +7,7 @@
 //
 // These functions are also compatible with the “Ed25519” function defined in
 // https://tools.ietf.org/html/draft-irtf-cfrg-eddsa-05.
-package crypto
+package iveil
 
 // This code is a port of the public domain, “ref10” implementation of ed25519
 // from SUPERCOP.
@@ -21,7 +21,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/edenzhong7/ifly/crypto/edwards25519"
+	"github.com/deepdive7/iveil/edwards25519"
 )
 
 const (

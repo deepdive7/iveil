@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package crypto
+package iveil_test
 
 import (
 	"bufio"
@@ -14,8 +14,8 @@ import (
 	"os"
 	"strings"
 	"testing"
-
-	"github.com/edenzhong7/ifly/crypto/edwards25519"
+	"github.com/deepdive7/iveil"
+	"github.com/deepdive7/iveil/edwards25519"
 )
 
 type zeroReader struct{}
@@ -28,7 +28,7 @@ func (zeroReader) Read(buf []byte) (int, error) {
 }
 
 func TestUnmarshalMarshal(t *testing.T) {
-	pub, _, _ := GenerateKey(rand.Reader)
+	pub, _, _ := iveil.GenerateKey(rand.Reader)
 
 	var A edwards25519.ExtendedGroupElement
 	var pubBytes [32]byte
@@ -47,28 +47,28 @@ func TestUnmarshalMarshal(t *testing.T) {
 
 func TestSignEd25519Verify(t *testing.T) {
 	var zero zeroReader
-	public, private, _ := GenerateKey(zero)
+	public, private, _ := iveil.GenerateKey(zero)
 
 	message := []byte("test message")
-	sig := Ed25519Sign(private, message)
-	if !Ed25519Verify(public, message, sig) {
+	sig := iveil.Ed25519Sign(private, message)
+	if !iveil.Ed25519Verify(public, message, sig) {
 		t.Errorf("valid signature rejected")
 	}
 
 	wrongMessage := []byte("wrong message")
-	if Ed25519Verify(public, wrongMessage, sig) {
+	if iveil.Ed25519Verify(public, wrongMessage, sig) {
 		t.Errorf("signature of different message accepted")
 	}
 }
 
 func TestCryptoSigner(t *testing.T) {
 	var zero zeroReader
-	public, private, _ := GenerateKey(zero)
+	public, private, _ := iveil.GenerateKey(zero)
 
 	signer := crypto.Signer(private)
 
 	publicInterface := signer.Public()
-	public2, ok := publicInterface.(PublicKey)
+	public2, ok := publicInterface.(iveil.PublicKey)
 	if !ok {
 		t.Fatalf("expected PublicKey from Public() but got %T", publicInterface)
 	}
@@ -84,7 +84,7 @@ func TestCryptoSigner(t *testing.T) {
 		t.Fatalf("error from Ed25519Sign(): %s", err)
 	}
 
-	if !Ed25519Verify(public, message, signature) {
+	if !iveil.Ed25519Verify(public, message, signature) {
 		t.Errorf("Ed25519Verify failed on signature from Ed25519Sign()")
 	}
 }
@@ -121,22 +121,22 @@ func TestGolden(t *testing.T) {
 		sig, _ := hex.DecodeString(parts[3])
 		// The signatures in the test vectors also include the message
 		// at the end, but we just want R and S.
-		sig = sig[:SignatureSize]
+		sig = sig[:iveil.SignatureSize]
 
-		if l := len(pubKey); l != PublicKeySize {
+		if l := len(pubKey); l != iveil.PublicKeySize {
 			t.Fatalf("bad public key length on line %d: got %d bytes", lineNo, l)
 		}
 
-		var priv [PrivateKeySize]byte
+		var priv [iveil.PrivateKeySize]byte
 		copy(priv[:], privBytes)
 		copy(priv[32:], pubKey)
 
-		sig2 := Ed25519Sign(priv[:], msg)
+		sig2 := iveil.Ed25519Sign(priv[:], msg)
 		if !bytes.Equal(sig, sig2) {
 			t.Errorf("different signature result on line %d: %x vs %x", lineNo, sig, sig2)
 		}
 
-		if !Ed25519Verify(pubKey, msg, sig2) {
+		if !iveil.Ed25519Verify(pubKey, msg, sig2) {
 			t.Errorf("signature failed to Ed25519Verify on line %d", lineNo)
 		}
 	}
@@ -149,7 +149,7 @@ func TestGolden(t *testing.T) {
 func BenchmarkKeyGeneration(b *testing.B) {
 	var zero zeroReader
 	for i := 0; i < b.N; i++ {
-		if _, _, err := GenerateKey(zero); err != nil {
+		if _, _, err := iveil.GenerateKey(zero); err != nil {
 			b.Fatal(err)
 		}
 	}
@@ -157,27 +157,27 @@ func BenchmarkKeyGeneration(b *testing.B) {
 
 func BenchmarkSigning(b *testing.B) {
 	var zero zeroReader
-	_, priv, err := GenerateKey(zero)
+	_, priv, err := iveil.GenerateKey(zero)
 	if err != nil {
 		b.Fatal(err)
 	}
 	message := []byte("Hello, world!")
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		Ed25519Sign(priv, message)
+		iveil.Ed25519Sign(priv, message)
 	}
 }
 
 func BenchmarkVerification(b *testing.B) {
 	var zero zeroReader
-	pub, priv, err := GenerateKey(zero)
+	pub, priv, err := iveil.GenerateKey(zero)
 	if err != nil {
 		b.Fatal(err)
 	}
 	message := []byte("Hello, world!")
-	signature := Ed25519Sign(priv, message)
+	signature := iveil.Ed25519Sign(priv, message)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		Ed25519Verify(pub, message, signature)
+		iveil.Ed25519Verify(pub, message, signature)
 	}
 }

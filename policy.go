@@ -1,7 +1,7 @@
 //go:generate mockgen -destination=mocks/mock_signature_policy.go -package=mocks github.com/edenzhong7/ifly/crypto SignaturePolicy
 //go:generate mockgen -destination=mocks/mock_hash_policy.go -package=mocks github.com/edenzhong7/ifly/crypto HashPolicy
 
-package crypto
+package iveil
 
 import (
 	"math/big"

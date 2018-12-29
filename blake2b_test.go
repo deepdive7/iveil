@@ -1,14 +1,16 @@
-package crypto
+package iveil_test
 
 import (
 	"bytes"
 	"crypto/rand"
 	"math/big"
 	"testing"
+
+	"github.com/deepdive7/iveil"
 )
 
 func BenchmarkHash(b *testing.B) {
-	hp := NewBlake2b()
+	hp := iveil.NewBlake2b()
 
 	message := make([]byte, 64)
 	_, err := rand.Read(message)
@@ -25,9 +27,9 @@ func BenchmarkHash(b *testing.B) {
 
 func TestHash(t *testing.T) {
 	t.Parallel()
-	hp := NewBlake2b()
+	hp := iveil.NewBlake2b()
 
-	r := Hash(hp, big.NewInt(123))
+	r := iveil.Hash(hp, big.NewInt(123))
 
 	n := new(big.Int)
 	n, ok := n.SetString("89391711502145780362310349925943903708999319576398061903082165979787487688967", 10)
@@ -41,7 +43,7 @@ func TestHash(t *testing.T) {
 
 func TestHashBytes(t *testing.T) {
 	t.Parallel()
-	hp := NewBlake2b()
+	hp := iveil.NewBlake2b()
 
 	r := hp.HashBytes([]byte("123"))
 

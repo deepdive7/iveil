@@ -1,4 +1,4 @@
-package crypto
+package iveil
 
 import (
 	blake2blib "github.com/minio/blake2b-simd"

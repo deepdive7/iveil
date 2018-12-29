@@ -1,13 +1,14 @@
-package crypto
+package iveil_test
 
 import (
 	"crypto/rand"
+	"github.com/deepdive7/iveil"
 	"reflect"
 	"testing"
 )
 
 func BenchmarkSign(b *testing.B) {
-	p := NewEd25519()
+	p := iveil.NewEd25519()
 	privateKey, _, err := p.GenerateKeys()
 	if err != nil {
 		panic(err)
@@ -30,7 +31,7 @@ func BenchmarkSign(b *testing.B) {
 }
 
 func BenchmarkVerify(b *testing.B) {
-	p := NewEd25519()
+	p := iveil.NewEd25519()
 	privateKey, publicKey, err := p.GenerateKeys()
 	if err != nil {
 		panic(err)
@@ -56,7 +57,7 @@ func BenchmarkVerify(b *testing.B) {
 
 func TestEd25519(t *testing.T) {
 	t.Parallel()
-	p := NewEd25519()
+	p := iveil.NewEd25519()
 
 	privateKey, publicKey, err := p.GenerateKeys()
 	if err != nil {
@@ -110,7 +111,7 @@ func TestEd25519(t *testing.T) {
 func TestRandomKeyPair(t *testing.T) {
 	t.Parallel()
 
-	kp := NewEd25519().RandomKeyPair()
+	kp := iveil.NewEd25519().RandomKeyPair()
 	if len(kp.PrivateKey) == 0 {
 		t.Errorf("private key length should not be 0")
 	}
